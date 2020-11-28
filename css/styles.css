@@ -1,0 +1,45 @@
+* {
+  padding: 0;
+  margin: 0;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+h3 {
+  padding-left: 15px;
+  padding-right: 15px;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
+  margin: 10px 0;
+}
+
+form {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+form label {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  margin-bottom: 0.6rem;
+  color: #5a5a5a;
+}
+
+form input[type="text"] {
+  padding: 10px 15px;
+  outline: none;
+  border-color: #c4c4c4;
+  border-style: solid;
+  border-radius: 1em;
+}
+
+form input[type="submit"] {
+  padding: 10px 15px;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande", "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  outline: none;
+  border-radius: 1em;
+  border: none;
+  background-color: #cecece;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #3a3a3a;
+}
+/*# sourceMappingURL=styles.css.map */
