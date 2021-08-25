@@ -18,7 +18,7 @@
 <?php
 
 require_once('connectivity.php');
-require_once('variables.php');
+
 
 if(ISSET($_GET['id']) && ISSET($_GET['name']) && ISSET($_GET['date']) && ISSET($_GET['score']) && ISSET($_GET['screenshot'])) {
     $id = $_GET['id'];
@@ -38,12 +38,13 @@ if(ISSET($_GET['id']) && ISSET($_GET['name']) && ISSET($_GET['date']) && ISSET($
 if(ISSET($_POST['submit'])){
     if($_POST['confirm'] == "yes"){
         $dbc = mysqli_connect(host, username, pwd, database) or die ("error in conncting to database");
-        $query = "UPDATE `highscore` SET `approve`= 1 WHERE `id` = $id";
+        $query = "UPDATE `guitarwars` SET `approved`= 1 WHERE `id` = $id";
         
         mysqli_query($dbc, $query) or die ("error");
         mysqli_close($dbc);
 
         echo '<p>The High Score of ' . $score . ' for ' . $fullname . ' was successfully approved';
+        header('Location:' . 'http://localhost/GUITAR_WAR/adminpage.php');
 
     } else {
         echo '<p>Sorry, there was a problem approving the high score.</p>';

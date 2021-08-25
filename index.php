@@ -1,174 +1,79 @@
+
 <?php
-    require_once('connectivity.php');
-    require_once('variables.php');
+
+ include_once('partials/header.php');
+ require_once('connectivity.php');
+ require_once('function/pagination_links.php');
+
+
+
+$page = ISSET($_GET['page']) ? $_GET['page'] : null;
+
+$current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+$result_per_page = 5;
+$skip = (($current_page - 1) * $result_per_page);
+
+
+
+ $dbc = mysqli_connect(host, username, pwd, database) or die ("error in conncting to database");
+
+ $query = "SELECT * FROM guitarwars WHERE approved = 1  ORDER BY score DESC, date ASC";
+ $data = mysqli_query($dbc, $query) or die ("error");
+
+$numRows = mysqli_num_rows($data);
+
+$num_pages = ceil($numRows / $result_per_page);
+
+$sql =  $query . " LIMIT $skip,  $result_per_page";
+$data = mysqli_query($dbc, $sql) or die ("error");
+
+ if($num_pages > 1){
+    $pagination_links = generate_page_links($current_page, $num_pages);
+    
+} 
+
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guitar Wars</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        nav {
-        width: 500px;
-        margin-left: 50px;
-        margin-top: 20px;
-        }
-
-        nav ul {
-        list-style-type: none;
-        display: flex;
-        justify-content: space-around;
-        }
-
-        nav ul li a {
-        text-decoration: none;
-        font-size: 1.2rem;
-        }
-
-        form input[type="file"] {
-            display:none;
-        }
-
-        label#screenshots {
-        padding: 10px 15px;
-        display:inline-block;
-        outline: none;
-        border-color: #c4c4c4;
-        border-style: solid;
-        border-radius: 1em;
-        margin:10px 0;
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <ul>
-            <li><a href="homepage.php">Home</a></li>
-            <li><a href="index.php">Add High Score</a></li>
-            <li><a href="adminpage.php">Admin Page</a></li>
-        </ul>
-    </nav>
 <div class="container">
-    <h3>Add your high Score</h3>
-<?php 
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-8">
+            <table>
 
-if(ISSET($_POST['submit'])){
-$dbc = mysqli_connect(host, username, pwd, database) or die ("error in conncting to database");
+<?php
 
-$fullname = mysqli_real_escape_string($dbc, trim($_POST['firstname']));
-$score = mysqli_real_escape_string($dbc, trim($_POST['score']));
-$screenshot = mysqli_real_escape_string($dbc, trim($_FILES['screenshot']['name']));
-$form = false;
-
-if((!empty($fullname)) && (empty($score)) && (empty($screenshot))){ 
-    echo '<p>You forgot to fill in the score and add a screenshot</p>'; 
-    $form = true;
-}
-
-if((empty($fullname)) && (!empty($score)) && (empty($screenshot))){ 
-    echo '<p>You forgot to fill in the name and add a screenshot</p>'; 
-    $form = true;
-}
-
-if((empty($fullname)) && (empty($score)) && (!empty($screenshot))){ 
-    echo '<p>You forgot to fill in the name and Score</p>'; 
-    $form = true;
-}
-
-if((empty($fullname)) && (!empty($score)) && (!empty($screenshot))){ 
-    echo '<p>You forgot to fill in the name input</p>'; 
-    $form = true;
-}
-
-if((!empty($fullname)) && (empty($score)) && (!empty($screenshot))){ 
-    echo '<p>You forgot to fill in the score input</p>'; 
-    $form = true;
-}
-
-if((!empty($fullname)) && (!empty($score)) && (empty($screenshot))){ 
-    echo '<p>You forgot to add a screenshot </p>'; 
-    $form = true;
-}
-
-if((empty($fullname)) && (empty($score)) && (empty($screenshot))){ 
-    echo '<p>You forgot to fill in all the input fields.</p>'; 
-    $form = true;
-}
-
-
-if((!empty($fullname)) && is_numeric($score) && (!empty($screenshot))){ 
-$screenshotname = $_FILES['screenshot']['name'];
-$screenshottype = $_FILES['screenshot']['type'];
-$screenshotsize = $_FILES['screenshot']['size'];
-$screenshotlocation = $_FILES['screenshot']['tmp_name'];
-$screenshoterror = $_FILES['screenshot']['error'];
-
-$allowed = array("jpeg", "jpg", "png");
-$Actual = explode("/", $screenshottype);
-$ActualFormat = strtolower(end($Actual));
-
-if(in_array($ActualFormat, $allowed)){
-    if($screenshotsize < 1000000){
-        if($screenshoterror === 0){
-            $actualimage = time() . $screenshotname;
-            $actualLocation  = location . $actualimage;
-            if(move_uploaded_file($screenshotlocation, $actualLocation)){
-                $query = "INSERT INTO `highscore` (`date`, `name`, `score`, `screenshot`) VALUES (NOW(),'$fullname','$score','$actualimage')";
-                $result = mysqli_query($dbc, $query) or die ("error");
-
-                echo "Thank you for submiting the form";
-                $fullname = "";
-                $score = "";
-                $screenshot = "";
-
-                mysqli_close($dbc);
-            } else {
-                echo '<p>An error occured in moving the image from a temporary folder</p>';
-            }
-        } else {
-            echo '<p>An error occured in uploading the image</p>';
-        }
-        
-    } else {
-        echo '<p>image is too large</p>';
+ $i = 0;
+ while($row = mysqli_fetch_array($data)){
+    if($i == 0) {
+        echo "<tr><td colspan='2' class='topScore'>Top Score: " . $row['score'] . "</td></tr>";
     }
 
-    @unlink($_FILES['screenshot']['tmp_name']);
+    echo "<td>" ;
+    echo "<span>" . $row['score'] . "</span>";
+    echo "<span><strong>Name: </strong>" . $row['name'] . "</span>";
+    echo "<span>" . $row['date'] . "</span>";
+    echo "</td>" ;
 
-} else {
-     echo '<p>We only accept image formats such as jpeg, jpg and png</p>';
-}
+    if(is_file(location . $row['screenshot']) && filesize(location . $row['screenshot']) > 0) {
+        echo '<td class="img"><img src="' . location . $row['screenshot'] . '" /></td></tr>';
+    } else {
+        echo "<td class='img'><img src='" . location . "unverified.jpg" . "'></td></tr>";
+    }
 
-}
+    $i++;
 
+ }
 
+ mysqli_close($dbc);
 
-} else {
-$form = true;
-}
-
-if($form){
-?> 
-<form method="post" action="<?php echo $_SERVER['PHP_SELF'];  ?>" enctype="multipart/form-data">
-    <label for="fullname">Full Name</label><br>
-    <input type="text" name="firstname" id="fullname" value="<?php if(!empty($fullname)) echo $fullname;  ?>"><br>
-    <label for="score">Score</label><br>
-    <input type="text" name="score" id="score" value="<?php if(!empty($score)) echo $score;  ?>"><br>
-    <label for="screenshot" id="screenshots" >Add ScreenShot</label><br>
-    <input type="file" name="screenshot" id="screenshot" value="<?php if(!empty($screenshot)) echo $screenshot;  ?>"><br>
-    <input type="submit" value="Add" name="submit">
-</form>
-
-<?php   } ?>
+?>
 
 
-    
+            </table>
+            <div class="paginate">
+                <?php echo $pagination_links; ?>
+            </div>
+        </div>
+    </div>
 </div>
+
 </body>
 </html>
-
-
-
-

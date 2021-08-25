@@ -1,0 +1,15 @@
+{
+    "name": "ynsaa/piano_war",
+    "autoload": {
+        "psr-4": {
+            "app\\": "./app"
+        }
+    },
+    "authors": [
+        {
+            "name": "dnbworks",
+            "email": "dooyongnsaakobalderama@gmail.com"
+        }
+    ],
+    "require": {}
+}

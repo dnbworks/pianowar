@@ -1,7 +1,7 @@
 <?php
 
-$username = "dooyong";
-$pwd = "nsaako";
+$username = "dnbworks";
+$pwd = "1234";
 
 if(!ISSET($_SERVER['PHP_AUTH_USER']) || !ISSET($_SERVER['PHP_AUTH_PW']) || ($_SERVER['PHP_AUTH_USER'] != $username) || ($_SERVER['PHP_AUTH_PW'] != $pwd)){
     header("http/1.1 401 Unauthorized");

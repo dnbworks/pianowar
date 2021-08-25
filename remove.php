@@ -1,47 +1,15 @@
 <?php 
     require_once('authentication.php');
+    include_once('partials/header.php');
+    require_once('connectivity.php');
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        nav {
-        width: 500px;
-        margin-left: 50px;
-        margin-top: 20px;
-        }
-
-        nav ul {
-        list-style-type: none;
-        display: flex;
-        justify-content: space-around;
-        }
-
-        nav ul li a {
-        text-decoration: none;
-        font-size: 1.2rem;
-        }
-    </style>
-</head>
-<body>
-<nav>
-    <ul>
-        <li><a href="homepage.php">Home</a></li>
-        <li><a href="index.php">Add High Score</a></li>
-        <li><a href="adminpage.php">Admin Page</a></li>
-    </ul>
-</nav>
 <div class="container">
     <h2>Guitar Wars- Remove a High Score</h2>
-    
-</div>
+
 <?php
  require_once('connectivity.php');
- require_once('variables.php');
+
 
  if(ISSET($_GET['id']) && ISSET($_GET['name']) && ISSET($_GET['date']) && ISSET($_GET['score']) && ISSET($_GET['screenshot'])) {
     $id = $_GET['id'];
@@ -62,11 +30,12 @@ if(ISSET($_POST['submit'])){
     if($_POST['confirm'] == "yes"){
         @unlink(location . $actualimage );
         $dbc = mysqli_connect(host, username, pwd, database) or die ("error in conncting to database");
-        $query = "DELETE FROM highscore  WHERE id = $id LIMIT 1";
+        $query = "DELETE FROM guitarwars WHERE id = $id LIMIT 1";
         mysqli_query($dbc, $query) or die ("error");
         mysqli_close($dbc);
 
         echo '<p>The High Score of ' . $score . ' for ' . $fullname . ' was successfully removed';
+        header('Location:' . 'http://localhost/GUITAR_WAR/adminpage.php');
 
     } else {
         echo '<p>the high score was not  removed</p>';
@@ -91,5 +60,6 @@ if(ISSET($_POST['submit'])){
 } 
 
 ?>
+</div>
 </body>
 </html>
